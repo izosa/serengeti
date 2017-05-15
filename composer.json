@@ -1,0 +1,31 @@
+{
+  "name": "izosa/serengeti",
+  "description": "iZoSa Serengeti CMS",
+  "type": "cms",
+  "keywords": [
+    "izosa",
+    "serengeti",
+    "cms"
+  ],
+  "homepage": "https://github.com/izosa/page",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Hristo Hristov",
+      "email": "izosa@msn.com",
+      "role": "creator"
+    }
+  ],
+  "require": {
+    "yiisoft/yii2": "*"
+  },
+  "require-dev": {
+  },
+
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "izosa\\serengeti\\": "src"
+    }
+  }
+}
