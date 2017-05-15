@@ -22,10 +22,5 @@
   "require-dev": {
   },
 
-  "minimum-stability": "dev",
-  "autoload": {
-    "psr-4": {
-      "izosa\\serengeti\\": "src"
-    }
-  }
+  "minimum-stability": "dev"
 }
