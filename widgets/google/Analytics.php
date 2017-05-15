@@ -1,5 +1,5 @@
 <?
-namespace izosa\serengeti\widgets\google\analytics;
+namespace izosa\serengeti\widgets\google;
 
 use yii\base\Widget;
 
@@ -15,9 +15,6 @@ class Analytics extends Widget
 
     public function init()
     {
-
-
-
         if(!YII_DEBUG)
         {
             if(empty($this->id)) {
@@ -27,10 +24,6 @@ class Analytics extends Widget
             if(!empty($this->id)){
                 $this->render('view/analytics',['id' => $this->id]);
             }
-
-
-
-
         }
     }
 }
