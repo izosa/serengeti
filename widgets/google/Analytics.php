@@ -1,13 +1,10 @@
 <?
-namespace izosa\serengeti\widgets\google;
+namespace serengeti\widgets\google;
 
 use yii\base\Widget;
 
 /**
- * Created by PhpStorm.
- * User: izosa
- * Date: 15.05.17
- * Time: 10:22
+ * Google Analytics Widget
  */
 class Analytics extends Widget
 {

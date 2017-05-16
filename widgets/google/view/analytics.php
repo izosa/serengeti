@@ -5,6 +5,5 @@
     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
     ga('create', '<?=$id?>', 'auto');
-
     ga('send', 'pageview');
 </script>
