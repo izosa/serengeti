@@ -1,6 +1,7 @@
 <?
 namespace izosa\serengeti\widgets\google;
 
+use Yii;
 use yii\base\Widget;
 
 /**
@@ -19,7 +20,7 @@ class Analytics extends Widget
             }
 
             if(!empty($this->id)){
-                $this->render('view/analytics',['id' => $this->id]);
+                $this->render('analytics',['id' => $this->id]);
             }
         }
     }
