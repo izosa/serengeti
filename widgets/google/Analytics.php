@@ -1,5 +1,5 @@
 <?
-namespace serengeti\widgets\google;
+namespace izosa\serengeti\widgets\google;
 
 use yii\base\Widget;
 
