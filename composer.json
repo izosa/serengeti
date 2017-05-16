@@ -17,9 +17,14 @@
     }
   ],
   "require": {
-    "yiisoft/yii2": "*"
   },
   "require-dev": {
+    "yiisoft/yii2": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "izosa\\serengeti\\": ""
+    }
   },
   "minimum-stability": "dev"
 }
