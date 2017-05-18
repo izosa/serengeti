@@ -1,25 +1,19 @@
-<?php
+<?
+namespace izosa\serengeti\widgets\elements;
 
-namespace frontend\widgets;
-
-use frontend\widgets\Loader;
+use yii\base\Widget;
 
 /**
  * Back to top button
  */
-class BackToTop extends \yii\base\Widget
+class BackToTop extends Widget
 {
     public $tooltip = 'Back to Top';
 
     public function init()
     {
         parent::init();       
-        
-        Loader::addWidget('backToTop');
 
         $this->render('backToTop',['tooltip' => $this->tooltip]);
-
-        echo '<a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" title="'.$this->tooltip.'" data-toggle="tooltip" data-placement="left"><span class="fa fa-chevron-up"></span></a>';
-
     }
 }
