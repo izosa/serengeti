@@ -30,7 +30,7 @@ class OpenGraph extends Widget
             ]);
             if(!self::$init)
             {
-                Loader::addWidget('facebookInit', ['status' => true, 'api' => Yii::$app->params['service']['facebook']['api']]);
+                Loader::addWidget('facebookInit', ['status' => true, 'api' => Yii::$app->params['serengeti']['facebook']['api']]);
                 
                 Yii::$app->view->registerMetaTag([
                     'property'  => 'fb:app_id',
