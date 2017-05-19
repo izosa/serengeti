@@ -10,11 +10,10 @@ use yii\web\AssetBundle;
  */
 class DebugAsset extends AssetBundle
 {
-    public function init()
-    {
-        $this->sourcePath = __DIR__ . '/assets'.(YII_DEBUG ? '/dev' : '');
-        parent::init();
+    public function setSourcePath($path){
+        $this->sourcePath = $path . '/assets'.(YII_DEBUG ? '/dev' : '');
     }
+
 
 
 }

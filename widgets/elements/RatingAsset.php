@@ -18,4 +18,11 @@ class RatingAsset extends DebugAsset
         'yii\web\JqueryAsset',
     ];
 
+    public function init()
+    {
+        $this->setSourcePath(__DIR__);
+        parent::init();
+    }
+
+
 }
