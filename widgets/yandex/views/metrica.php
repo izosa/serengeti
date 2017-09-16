@@ -9,9 +9,9 @@ SEO::addTag('yandex-verification', Yii::$app->params['serengeti']['yandex']['ver
     (function (d, w, c) {
         (w[c] = w[c] || []).push(function () {
             try {
-                w.yaCounter<?=Yii::$app->params['serengeti']['yandex']['metrica']?> =
+                w.yaCounter<?=Yii::$app->params['service']['yandex']['metrica']?> =
                     new Ya.Metrika({
-                        id:<?=Yii::$app->params['serengeti']['yandex']['metrica']?>,
+                        id:<?=Yii::$app->params['service']['yandex']['metrica']?>,
                         webvisor: true,
                         clickmap: true,
                         trackLinks: true,
@@ -33,7 +33,7 @@ SEO::addTag('yandex-verification', Yii::$app->params['serengeti']['yandex']['ver
         }
     })(document, window, "yandex_metrika_callbacks");</script>
 <noscript>
-    <div><img src="//mc.yandex.ru/watch/<?=Yii::$app->params['serengeti']['yandex']['metrica']?>"
+    <div><img src="//mc.yandex.ru/watch/<?=Yii::$app->params['service']['yandex']['metrica']?>"
               style="position:absolute; left:-9999px;" alt=""/></div>
 </noscript>
 <!-- /Yandex.Metrika counter -->';

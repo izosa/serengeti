@@ -16,7 +16,7 @@ class Analytics extends Widget
         if(!YII_DEBUG)
         {
             if(empty($this->id)) {
-                $this->id = Yii::$app->params['serengeti']['google']['analytics'];
+                $this->id = Yii::$app->params['service']['google']['analytics'];
             }
 
             if(!empty($this->id)){

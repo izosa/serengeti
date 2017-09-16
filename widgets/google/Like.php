@@ -94,7 +94,7 @@ class Like extends Widget
 
         if(empty($this->href))
         {
-            $this->href = 'https://plus.google.com/' . Yii::$app->params['serengeti']['google']['profile'];
+            $this->href = 'https://plus.google.com/' . Yii::$app->params['service']['google']['profile'];
         }
 
         $this->render('like',['button' => $this]);
