@@ -93,17 +93,19 @@ class SEO extends Widget
     
     public static function breadcrumbs()
     {
-        $output =  '<ol itemscope itemtype="http://schema.org/BreadcrumbList" class="breadcrumb desktop-inline">';
-        foreach (Yii::$app->view->params['breadcrumbs'] as $key => $value)
-        {
-           $output.= '<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">'
-                   . '  <a itemprop="item" href="'.$value['url'].'">
-                        <span itemprop="name">'.$value['label'].'</span></a>
-                        <meta itemprop="position" content="'.($key+1).'" />
-                      </li>';
+        if(!empty(Yii::$app->view->params['breadcrumbs'])){
+            $output =  '<ol itemscope itemtype="http://schema.org/BreadcrumbList" class="breadcrumb desktop-inline">';
+            foreach (Yii::$app->view->params['breadcrumbs'] as $key => $value)
+            {
+               $output.= '<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">'
+                       . '  <a itemprop="item" href="'.$value['url'].'">
+                            <span itemprop="name">'.$value['label'].'</span></a>
+                            <meta itemprop="position" content="'.($key+1).'" />
+                          </li>';
+            }
+            $output.= '</ol>';
+            echo $output;
         }
-        $output.= '</ol>';
-        echo $output;
     }
     
     public static function title($title)
