@@ -60,19 +60,24 @@ class Rating extends Widget
             'model' => $this->model,
         ]);
     }
-        
+
+    /**
+     * Create new vote
+     * @param $class
+     * @return mixed
+     */
     public static function vote($class)
     {
-        if(Yii::$app->request->isAjax && isset($_GET['id']) && intval($_GET['id']) > 0 && isset($_GET['rate']) && intval($_GET['rate']) || YII_DEBUG)
+        $id = Yii::$app->request->get('id', '');
+        $rate = intval(Yii::$app->request->get('rate', 0));
+
+        if((Yii::$app->request->isAjax && !empty($id) && !empty($rate)) || YII_DEBUG)
         {
             Yii::$app->response->format = 'json';
-            
-            $id = intval($_GET['id']);
-            $rate = isset($_GET['rate']) ? intval($_GET['rate']) : 0;
 
-            $item = $class::find()->where(['id' => $id])->one();
+            $item = $class::findOne($id);
 
-            if ($item !== null) {
+            if (!is_null($item)) {
                 $item->rate+= $rate;
                 ++$item->votes;
                 $item->save();
