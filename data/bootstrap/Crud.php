@@ -3,12 +3,13 @@
 namespace izosa\serengeti\data\bootstrap;
 
 use Yii;
+use kartik\grid\GridView;
 use kartik\icons\Icon;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 
-class Crud extends kartik\grid\GridView
+class Crud extends GridView
 {
     const SCENARIO_SEARCH = 'search';
     const SCENARIO_CRUD = 'crud';

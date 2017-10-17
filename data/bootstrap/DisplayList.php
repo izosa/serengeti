@@ -17,7 +17,7 @@ class DisplayList extends \yii\widgets\ListView
 {
     public $layout ='<ul>{items}</ul><nav>{pager}</nav>{summary}';
     public $options = [
-        'class' => 'listView',
+        'class' => 'displayList',
         'id' => false,
     ];
 
@@ -57,13 +57,13 @@ class DisplayList extends \yii\widgets\ListView
         $modelName = (new \ReflectionClass($this->filterModel))->getShortName();
 
         // listView class
-        $this->options['class'].= (empty($this->options['class']) ? '' : ' ').'listView_'.$modelName;
+        $this->options['class'].= (empty($this->options['class']) ? '' : ' ').'displayList_'.$modelName;
 
         // listItem class
         if(empty($this->itemOptions)){
-            $this->itemOptions = ['class'=> (empty($this->itemOptions['class']) ? '' : ' ').'listViewItem_'.$modelName];
+            $this->itemOptions = ['class'=> (empty($this->itemOptions['class']) ? '' : ' ').'displayListItem_'.$modelName];
         } else {
-            $this->itemOptions['class'].= (empty($this->itemOptions['class']) ? '' : ' ').'listViewItem_'.$modelName;
+            $this->itemOptions['class'].= (empty($this->itemOptions['class']) ? '' : ' ').'displayListItem_'.$modelName;
         }
 
         parent::init();
