@@ -6,22 +6,32 @@ use yii\base\Widget;
 
 /**
  * Google Analytics Widget
+ * @version 2.0
  */
 class Analytics extends Widget
 {
+    /**
+     * @var string Analytics ID
+     */
     public $id;
 
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
-        if(!YII_DEBUG)
+        if(!YII_DEBUG && empty($this->id))
         {
-            if(empty($this->id)) {
-                $this->id = Yii::$app->params['service']['google']['analytics'];
-            }
+            $this->id = Yii::$app->params['service']['google']['analytics'];
+        }
+    }
 
-            if(!empty($this->id)){
-                $this->render('analytics',['id' => $this->id]);
-            }
+    /**
+     * @inheritdoc
+     */
+    public function run(){
+         if(!YII_DEBUG && !empty($this->id)){
+            return $this->render('analytics',['id' => $this->id]);
         }
     }
 }
