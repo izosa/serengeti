@@ -41,7 +41,7 @@ class CrudForm extends ActiveForm{
         return $this->field($model, $attribute)->widget(Tinymce::className(), [
             'options' => $options,
             'configs' => [ // Read more: http://www.tinymce.com/wiki.php/Configuration
-                'plugins' => 'fullscreen,image,link,preview, visualblocks,code,table,print,media',
+                'plugins' => 'fullscreen,image,link,preview, visualblocks,code,table,print,media,lists',
                 'toolbar' => [
                     "preview fullscreen | undo redo |  alignleft aligncenter alignright alignjustify | indent outdent bullist numlist |"
                     . " styleselect | bold italic underline blockquote removeformat | link image media | code visualblocks"
@@ -55,6 +55,7 @@ class CrudForm extends ActiveForm{
 //                    "jbimages" => Yii::$app->assetManager->bundles['backend\assets\AppAsset']->baseUrl."/js/lib/tinymce/jbimages/plugin.min.js",
                 ],
                 'image_advtab' => true,
+                'height' => '600',
                 'image_class_list' => [
                     ['title' => 'Responsive', 'value' => ''],
                     ['title' => 'Fixed', 'value' => 'imageFixed'],
@@ -84,17 +85,17 @@ class CrudForm extends ActiveForm{
 
     public function buttonSave($model)
     {
-        return Html::submitButton($model->isNewRecord ? '<i class="glyphicon glyphicon-file"></i> Създай' : '<i class="glyphicon glyphicon-floppy-disk"></i> Запиши', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-info']);
+        return Html::submitButton(Icon::show($model->isNewRecord ? 'file' : 'floppy-o').' '.Yii::t('app/crud',$model->isNewRecord ? 'form.create' : 'form.save') , ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-info']);
     }
 
     public function buttonCancel($model)
     {
-        return Html::a(Icon::show('remove').' Отказ', Yii::$app->request->referrer, ['class' => 'btn btn-warning']);
+        return Html::a(Icon::show('remove').' '.Yii::t('app/crud','form.cancel'), Yii::$app->request->referrer, ['class' => 'btn btn-warning']);
     }
 
     public function buttonPreview($model)
     {
-        return $model->isNewRecord ? '' : Html::a('<i class="glyphicon glyphicon-eye-open"></i> Преглед в сайта', str_replace('/admin/','/',$model->url), ['class' => 'btn btn-review pull-right', 'target' => '_blank']);
+        return $model->isNewRecord ? '' : Html::a(Icon::show('eye').' '.Yii::t('app/crud','form.live.preview'), str_replace('admin.','www.',$model->url), ['class' => 'btn btn-review pull-right', 'target' => '_blank']);
     }
 
 
