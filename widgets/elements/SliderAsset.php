@@ -1,25 +1,27 @@
 <?
 namespace izosa\serengeti\widgets\elements;
 
-use izosa\serengeti\widgets\helpers\DebugAsset;
+use yii\web\AssetBundle;
 
 /**
- * Rating asset
+ * Slider asset
  * @author Hristo Hristov <izosa@msn.com>
  */
-class SliderAsset extends DebugAsset
+class SliderAsset extends AssetBundle
 {
+    public $sourcePath = '@npm/owl.carousel/dist';
+
     public $js = [
-        'js/owl.carousel.js',
+        'owl.carousel.min.js',
     ];
 
     public $depends = [
         'yii\web\JqueryAsset',
     ];
 
-    public function init()
-    {
-        $this->setSourcePath(__DIR__);
-        parent::init();
-    }
+    public $publishOptions = [
+        'only' => [
+            'owl.carousel.min.js',
+        ]
+    ];
 }
