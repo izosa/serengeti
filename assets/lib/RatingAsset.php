@@ -1,7 +1,9 @@
 <?
-namespace common\assets\lib;
+
+namespace izosa\serengeti\assets\lib;
 
 use izosa\serengeti\assets\AssetBundle;
+
 
 /**
  * Rating asset

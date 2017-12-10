@@ -1,8 +1,9 @@
 <?
 
-namespace common\assets\lib;
+namespace izosa\serengeti\assets\lib;
 
-use yii\web\AssetBundle;
+use izosa\serengeti\assets\AssetBundle;
+
 
 /**
  * Swipebox asset
