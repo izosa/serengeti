@@ -1,0 +1,79 @@
+.shareWidget {
+
+  .title {
+    display: block;
+    margin: 20px 0px 8px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    > li {
+      float: left;
+
+      > a {
+        float: left;
+        position: relative;
+        display: inline-block;
+        margin: 3px 6px 3px 0px;
+        padding: 6px 15px 6px 40px;
+        color: #ffffff;
+        font-size: 13px;
+        text-decoration: none;
+
+        &:before {
+          background: url("#{$path-graphics}/sprite.png") top left no-repeat;
+          width: 20px;
+          height: 20px;
+          content: "";
+          position: absolute;
+          left: 10px;
+          top: 18%;
+        }
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        &.twitter {
+          background: #2CA9E1;
+          &:before {
+            background-position: 0 -392px;
+          }
+        }
+
+        &.facebook {
+          background: #3B5997;
+          &:before {
+            background-position: -20px -392px;
+          }
+        }
+
+        &.gplus {
+          background: #353631;
+          &:before {
+            background-position: -40px -372px;
+          }
+        }
+
+        &.rss {
+          background: #FF6501;
+          &:before {
+            background-position: -20px -372px;
+          }
+        }
+
+        &.mail {
+          background: #20B9EB;
+          &:before {
+            background-position: 0 -372px;
+          }
+        }
+      }
+    }
+  }
+}
