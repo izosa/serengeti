@@ -1,0 +1,29 @@
+@import "../../packages/node_modules/swipebox/scss/swipebox";
+
+#swipebox-slider {
+  .slide-loading {
+    background: url("#{$graphics}/slider/loader.gif") no-repeat center center;
+  }
+}
+
+
+#swipebox-prev,
+#swipebox-next,
+#swipebox-close {
+  background-image: url("#{$graphics}/slider/icons.png");
+  background-repeat: no-repeat;
+  border: none!important;
+  text-decoration: none!important;
+  cursor: pointer;
+  //position: absolute;
+  width: 50px;
+  height: 50px;
+  top: 0;
+}
+
+// pintrest button
+.current span {
+  position: absolute;
+  top:0;
+  left: 0;
+}
