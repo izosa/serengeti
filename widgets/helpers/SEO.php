@@ -12,7 +12,6 @@ class SEO extends Widget
 {
     public static $meta = [];
     public static $link = [];
-    public static $json = '';
 
     /**
      * @inheritdoc
@@ -24,10 +23,9 @@ class SEO extends Widget
 
     public static function addTag($name, $value)
     {
-        if(!empty($name) && !empty($value) && !isset(self::$meta[$name]))
-        {
+        if (!empty($name) && !empty($value) && !isset(self::$meta[$name])) {
             Yii::$app->view->registerMetaTag([
-                'name'  => $name,
+                'name' => $name,
                 'content' => $value
             ]);
 
@@ -37,10 +35,9 @@ class SEO extends Widget
 
     public static function addLink($rel, $href)
     {
-        if(!empty($rel) && !empty($href) && !isset(self::$link[$rel]))
-        {
+        if (!empty($rel) && !empty($href) && !isset(self::$link[$rel])) {
             Yii::$app->view->registerLinkTag([
-                'rel'  => $rel,
+                'rel' => $rel,
                 'href' => $href
             ]);
 
@@ -61,7 +58,7 @@ class SEO extends Widget
     public static function addCanonical()
     {
 
-        self::addLink('canonical', Yii::$app->request->hostInfo.(!empty(Yii::$app->request->pathInfo) ? '/'.Yii::$app->request->pathInfo : ''));
+        self::addLink('canonical', Yii::$app->request->hostInfo . (!empty(Yii::$app->request->pathInfo) ? '/' . Yii::$app->request->pathInfo : ''));
     }
 
     public static function addIndexNoFollow()
@@ -79,12 +76,10 @@ class SEO extends Widget
         self::addTag('robots', 'noindex,follow');
     }
 
-    public static function addBreadcrumb($label = '',$url = '')
+    public static function addBreadcrumb($label = '', $url = '')
     {
-        if(!empty($label))
-        {
-            if(empty($url))
-            {
+        if (!empty($label)) {
+            if (empty($url)) {
                 $url = Yii::$app->request->getAbsoluteUrl();
             }
             Yii::$app->view->params['breadcrumbs'][] = ['label' => $label, 'url' => Url::to($url, true)];
@@ -113,27 +108,48 @@ class SEO extends Widget
         Yii::$app->view->title = $title.' | '.Yii::$app->params['site']['name'];
     }
 
-    public static function JsonLd()
+    public static function linkedData($data, $encode = true)
     {
-        self::JsonLogo();
-        echo '<script type="application/ld+json">'.self::$json.'</script>';
+        if ($encode) {
+            $data = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        }
+
+        return '<script type="application/ld+json">' . $data . '</script>';
     }
 
-    public static function JsonLogo()
+    public static function linkedData_Organisation()
     {
-        self::$json.= '
-                {
-                  "@context": "http://schema.org",
-                  "@type": "Organization",
-                  "name" : "'.Yii::$app->params['site']['name'].'",
-                  "url": "'.Url::to('/',true).'",
-                  "logo": "'.Url::to('/images/logo.svg',true).'",
-                  "sameAs" : [
-                    "https://www.facebook.com/'.Yii::$app->params['site']['name'].'",
-                    "https://www.twitter.com/'.Yii::$app->params['site']['name'].'",
-                    "https://plus.google.com/+'.Yii::$app->params['site']['name'].'"
-                   ]
-                }
-                ';
+        $sameAs = [];
+            if(isset(Yii::$app->params['service']['goolge']['url'])) { $sameAs[] = Yii::$app->params['service']['goolge']['url'];}
+            if(isset(Yii::$app->params['service']['facebook']['url'])) { $sameAs[] = Yii::$app->params['service']['facebook']['url'];}
+            if(isset(Yii::$app->params['service']['twitter']['url'])) { $sameAs[] = Yii::$app->params['service']['twitter']['url'];}
+
+        return (object)[
+            "@context" => "http://schema.org",
+            "@type" => "Organization",
+            "name" => Yii::$app->params['site']['name'],
+            "url" => Url::to('/', true),
+            "logo" => Url::to(Yii::$app->params['site']['logo'], true),
+            "sameAs" => $sameAs
+        ];
+    }
+
+    public static function linkedData_Search()
+    {
+        return (object)[
+            "@context" => "http://schema.org",
+            "@type" => "WebSite",
+            "name" => Yii::$app->params['site']['name'],
+            "url" => Url::to('/', true),
+            "potentialAction" => (object)[
+                "@type" => "SearchAction",
+                "target" => Url::to('/', true) . 'q={search_term_string}',
+                "query-input" => "required name=search_term_string"
+            ]
+        ];
+    }
+
+    public static function amp($url){
+        self::addLink('amphtml', $url);
     }
 }
