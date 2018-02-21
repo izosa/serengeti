@@ -2,6 +2,7 @@
 namespace izosa\serengeti\site;
 
 use Yii;
+use yii\base\InvalidArgumentException;
 use yii\db\ActiveRecord;
 use yii\helpers\Url;
 
@@ -263,13 +264,17 @@ class Utility{
      * @param $model
      * @return string
      */
-    public static function shortClassName($model){
+    public static function shortClassName($model, $lowercase = true){
 
         if(is_object($model)){
-            return (new \ReflectionClass($model))->getShortName();
+            $name =  (new \ReflectionClass($model))->getShortName();
         } else if(is_string($model)){
-            return basename(str_replace('\\','/',$model));
+            $name = basename(str_replace('\\','/',$model));
+        } else{
+            throw new InvalidArgumentException();
         }
+
+        return $lowercase ? strtolower($name) : $name;
     }
 
 }

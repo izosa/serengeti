@@ -38,11 +38,6 @@ class CrudList extends GridView
 
     public $panel_up_left = '';
     public $panel_up_right = '';
-    public $panel_down_left = '';
-    public $panel_down_right = '';
-
-
-    private $panel;
 
     //public $layout ='{items}<div class="text-center">{pager}{summary}</div>';
 
@@ -90,21 +85,12 @@ class CrudList extends GridView
         }
 
         if($this->option_summary){
-            $this->panel['before'].= Html::a(Icon::show('times').' '.Yii::t('app/crud', 'clear.filters'), ['index'], ['class' => 'pull-right btn btn-danger', 'style' => 'margin-right:5px']);
+            $this->panel['before'].= ' <div class="pull-right" style="line-height:36px;color:grey;font-size:12px;margin-right:15px;">{summary}</div>';
         }
 
         if($this->panel_up_right){
             $this->panel['before'].= $this->panel_up_right;
         }
-
-        // @todo add rows float class wrappers
-        if($this->panel_down_left){
-            $this->panel['after'].= $this->panel_down_left;
-        }
-        if($this->panel_down_right){
-            $this->panel['after'].= $this->panel_down_right;
-        }
-
 
         $this->panel = ArrayHelper::merge( [
             'type'=>CrudList::TYPE_DEFAULT,
