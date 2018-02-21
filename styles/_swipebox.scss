@@ -2,15 +2,14 @@
 
 #swipebox-slider {
   .slide-loading {
-    background: url("#{$path-graphics}/slider/loader.gif") no-repeat center center;
+    background: url("#{$path-graphics}/lightbox/loader.gif") no-repeat center center;
   }
 }
-
 
 #swipebox-prev,
 #swipebox-next,
 #swipebox-close {
-  background-image: url("#{$path-graphics}/slider/icons.png");
+  background-image: url("#{$path-graphics}/lightbox/icons.png");
   background-repeat: no-repeat;
   border: none!important;
   text-decoration: none!important;
