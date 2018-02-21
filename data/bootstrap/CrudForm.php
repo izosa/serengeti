@@ -14,6 +14,12 @@ use kartik\icons\Icon;
  */
 class CrudForm extends ActiveForm{
 
+    const SCENARIO_SEARCH = 'search';
+    const SCENARIO_CRUD = 'crud';
+
+    const STATUS_PUBLISHED = 1;
+    const STATUS_DRAFT = 0;
+
     public $layout = 'horizontal';
 
     public $options = [
@@ -82,6 +88,10 @@ class CrudForm extends ActiveForm{
                 <span class="mdl-switch__label">'.$model->getAttributeLabel($attribute).'</span>
             </label>';
     }
+
+
+    // buttons
+
 
     public function buttonSave($model)
     {
