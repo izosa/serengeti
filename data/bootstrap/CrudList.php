@@ -17,19 +17,23 @@ class CrudList extends GridView
     public $option_class = '';
     public $option_layout = '';
 
-    public $option_bordered = true;
-    public $option_condensed = true;
-    public $option_hover = true;
-    public $option_responsive = true;
-    public $option_export = false;
-    public $option_summary = true;
-    public $option_filterPosition = CrudList::FILTER_POS_HEADER;
+    public $bordered = true;
+    public $condensed = true;
+    public $hover = true;
+    public $responsive = true;
+    public $export = false;
+    public $summary = true;
+    public $filterPosition = CrudList::FILTER_POS_HEADER;
 
-    public $control_create = true;
-    public $control_resetFilter = true;
+    public $filterDisplay = true;
+    public $toolbarDisplay = true;
+    public $createDisplay = true;
 
-    public $option_pjax = true;
-    public $option_pjaxSettings = [
+    public $create = true;
+    public $resetFilter = true;
+
+    public $pjax = true;
+    public $pjaxSettings = [
         'neverTimeout'=>true,
         'beforeGrid'=>'',
         'afterGrid'=>'',
@@ -47,83 +51,83 @@ class CrudList extends GridView
      */
     public function init()
     {
-        $this->setup_dataProvider();
-        $this->setup_pager();
-        $this->setup_panels();
-        $this->setup_options();
+
+        //options
+//        $this->option_id = empty($this->id) ? false : $this->id;
+//        $this->panel_class = empty($this->option_class) ? 'crudList crudList'.Utility::shortClassName($this->filterModel) : $this->option_class;
 
 
-        parent::init();
-    }
+        // toolbar
+        if($this->toolbarDisplay){
 
-    private function setup_pager(){
+            $this->toolbar = [];
+
+            // create
+            if($this->createDisplay){
+                $this->toolbar[] = Html::a('<i class="fa fa-plus"></i> '.Yii::t('app/crud', 'create'), ['create'], [
+                    'class' => 'btn btn-success',
+                ]);
+            }
+
+            // filter clear
+            if($this->filterDisplay){
+                $this->toolbar[] = Html::a('<i class="fa fa-close"></i> '.Yii::t('app/crud', 'filter.clear'), ['index'], [
+                    'class' => 'btn btn-danger pull-right',
+                    'title' => 'Reset Grid'
+                ]);
+            }
+
+            // items
+            if($this->toolbarDisplay && !empty($this->toolbarItems)){
+                foreach ($this->toolbarItems as $item){
+                    $this->toolbar[] = $item;
+                }
+            }
+
+            $this->toolbar[] = '{summary}';
+        }
+
+        //template
+        $this->panelTemplate = '<div class="{prefix}{type} '.(empty($this->option_class) ? ' crudList crudList'.Utility::shortClassName($this->filterModel,false) : $this->option_class).'">';
+        $this->panelTemplate.= $this->toolbarDisplay ? Html::tag('div', '{toolbar}',['class' => 'toolbar']) : '';
+        $this->panelTemplate.='{items}{panelFooter}</div>';
+
+        //panels
+//
+//        $this->panelFooterTemplate =
+
+        $this->panel = ArrayHelper::merge( [
+//            'type'=>CrudList::TYPE_DEFAULT,
+//            'heading'=>false,
+//            'footer'=>false,
+
+            'footerOptions' => ['class' => 'panel-footer text-center'],
+        ],$this->panel);
+
+//        $this->panel = false;
+
+
+        // pager
         $this->pager = [
             'maxButtonCount' => 5,
             'prevPageLabel' => Icon::show('chevron-left'),
             'nextPageLabel' => Icon::show('chevron-right'),
         ];
-    }
 
-    /**
-     * Setup Visual Panels
-     */
-    private function setup_panels(){
-
-        $this->panel['before'] = '';
-        $this->panel['after'] = '';
-
-        if($this->control_create){
-            $this->panel['before'].= Html::a(Icon::show('plus').' '.Yii::t('app/crud', 'create'),Url::to('/'.strtolower(Utility::shortClassName($this->filterModel)).'/create',true), ['class' => 'btn btn-success']);
-        }
-
-        if($this->panel_up_left){
-            $this->panel['before'].= $this->panel_up_left;
-        }
-
-        if($this->control_resetFilter){
-            $this->panel['before'].= Html::a(Icon::show('times').' '.Yii::t('app/crud', 'filter.clear'), ['index'], ['class' => 'pull-right btn btn-danger', 'style' => 'margin-right:5px']);
-        }
-
-        if($this->option_summary){
-            $this->panel['before'].= ' <div class="pull-right" style="line-height:36px;color:grey;font-size:12px;margin-right:15px;">{summary}</div>';
-        }
-
-        if($this->panel_up_right){
-            $this->panel['before'].= $this->panel_up_right;
-        }
-
-        $this->panel = ArrayHelper::merge( [
-            'type'=>CrudList::TYPE_DEFAULT,
-            'heading'=>false,
-            'footerOptions' => ['class' => 'panel-footer text-center'],
-        ],$this->panel);
-    }
-
-    /**
-     * Setup Data Provider
-     */
-    private function setup_dataProvider(){
+        // dataProvider
         if(is_null($this->dataProvider)){
             $this->dataProvider = $this->filterModel->dataProvider;
         }
+
+
+        // filter display
+        if(!$this->filterDisplay){
+            $this->filterModel = null;
+        }
+
+
+
+        parent::init();
     }
-
-    /**
-     * Setup Options
-     */
-    private function setup_options(){
-        $this->option_id = empty($this->option_id) ? false : $this->option->id;
-        $this->option_class = empty($this->option_class) ? 'crudList crudList'.Utility::shortClassName($this->filterModel) : $this->option_class;
-        $this->pjax = $this->option_pjax;
-        $this->pjaxSettings = $this->option_pjaxSettings;
-
-        $this->bordered = $this->option_bordered;
-        $this->condensed = $this->option_condensed;
-        $this->hover = $this->option_hover;
-        $this->responsive = $this->option_responsive;
-        $this->export = $this->option_export;
-        $this->filterPosition = $this->option_filterPosition;
-    }
-
 
 }
