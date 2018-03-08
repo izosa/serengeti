@@ -24,6 +24,7 @@ class CrudList extends GridView
     public $export = false;
     public $summary = true;
     public $filterPosition = CrudList::FILTER_POS_HEADER;
+    public $resizableColumns = false;
 
     public $filterDisplay = true;
     public $toolbarDisplay = true;
