@@ -166,7 +166,7 @@ class Utility{
      * @return string
      */
     public static function latToCyr($text){
-        return str_replace(self::$cyrillic, self::$latin,$text);
+        return str_replace(self::$latin, self::$cyrillic,$text);
     }
     /**
      * Convert latin to cyrillic symbols
