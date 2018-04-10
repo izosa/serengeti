@@ -174,7 +174,7 @@ class Utility{
      * @return string
      */
     public static function cyrToLat($text){
-        return str_replace(self::$latin, self::$cyrillic,$text);
+        return str_replace(self::$cyrillic, self::$latin,$text);
     }
 
 
