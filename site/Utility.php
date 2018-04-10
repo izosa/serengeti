@@ -8,6 +8,9 @@ use yii\helpers\Url;
 
 class Utility{
 
+    public static $latin = [ "a", "b", "v", "g", "d", "e", "j", "z", "i", "i", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "f", "h", "tz", "ch", "sh", "sht", "y", "x", "iu", "ia", "A", "B", "V", "G", "D", "E", "J", "Z", "I", "I", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "H", "TZ", "CH", "SH", "SHT", "Y", "IU", "IA"];
+    public static $cyrillic = [ "а", "б", "в", "г", "д", "е", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ь", "ю", "я", "А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ю", "Я",];
+
     public static function parceNumbers($value)
     {
         return preg_replace( '/[^0-9]/', '', $value );
@@ -41,23 +44,6 @@ class Utility{
         if($html_linebreaks) $content = nl2br($content);
 
         return $content. '...';
-    }
-
-    public static function urlEscape($url, $params = false){
-
-//            ; / ? : @ = &
-//            " < > # % { } | \ ^ ~ [ ] `
-
-//       [0-9a-zA-Z] $-_.+!*'(),
-
-//        $special = [
-//
-//
-//
-//        ]
-//
-//            preg_replace($regex, ' ', $string)
-
     }
 
     /**
@@ -161,34 +147,6 @@ class Utility{
         return $d && $d->format($format) == $date;
     }
 
-    /**
-     * Convert post array to list of objects
-     * @param $model ActiveRecord
-     * @return array
-     */
-    public static function postToObjects($model){
-        $key =self::shortClassName($model);
-        $class = $model::className();
-        $items = Yii::$app->request->post($key);
-
-        $list = [];
-
-        if(!empty($items)){
-            $keys = array_keys($items);
-            $count = count($items[$keys[0]]);
-
-            for ($i = 0; $i < $count; $i++){
-                $item = new $class();
-
-                foreach ($keys as $key){
-                    $item->{$key} = isset($items[$key][$i]) ? $items[$key][$i] : '';
-                }
-                $list[] = $item;
-            }
-        }
-
-        return $list;
-    }
 
     /**
      * Handle url normalisation
@@ -197,11 +155,26 @@ class Utility{
      * @return mixed|string
      */
     public static function url($url, $caseSensitive = false){
-        $cyrillic = [ "а", "б", "в", "г", "д", "е", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ь", "ю", "я", "А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ю", "Я", " " , "/" ,"|","="];
-        $latin = [ "a", "b", "v", "g", "d", "e", "j", "z", "i", "i", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "f", "h", "tz", "ch", "sh", "sht", "y", "x", "iu", "ia", "A", "B", "V", "G", "D", "E", "J", "Z", "I", "I", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "H", "TZ", "CH", "SH", "SHT", "Y", "IU", "IA", "-", "-" ,"-","-"];
-        $url = str_replace($cyrillic, $latin,trim($url));
+        $url = str_replace([" " , "/" ,"|","="], ["-"],self::cyrToLat(trim($url)));
         !$caseSensitive ? $url = strtolower($url) : '';
         return $url;
+    }
+
+    /**
+     * Convert latin to cyrillic symbols
+     * @param $text
+     * @return string
+     */
+    public static function latToCyr($text){
+        return str_replace(self::$cyrillic, self::$latin,$text);
+    }
+    /**
+     * Convert latin to cyrillic symbols
+     * @param $text
+     * @return string
+     */
+    public static function cyrToLat($text){
+        return str_replace(self::$latin, self::$cyrillic,$text);
     }
 
 
