@@ -13,8 +13,6 @@ use yii\helpers\ArrayHelper;
 class CrudList extends GridView
 {
 
-    public $option_id = false;
-    public $option_class = '';
     public $option_layout = '';
 
     public $bordered = true;
@@ -22,7 +20,6 @@ class CrudList extends GridView
     public $hover = true;
     public $responsive = true;
     public $export = false;
-    public $summary = true;
     public $filterPosition = self::FILTER_POS_HEADER;
     public $resizableColumns = false;
 
@@ -30,8 +27,11 @@ class CrudList extends GridView
     public $toolbarDisplay = true;
     public $createDisplay = true;
 
-    public $create = true;
-    public $resetFilter = true;
+    public $toolbar = [];
+    public $toolbarCreate = true;
+    public $toolbarResetFilter = true;
+
+    public $panelTemplate = '';
 
     public $pjax = true;
     public $pjaxSettings = [
@@ -44,69 +44,59 @@ class CrudList extends GridView
     public $panel_up_left = '';
     public $panel_up_right = '';
 
-    //public $layout ='{items}<div class="text-center">{pager}{summary}</div>';
-
 
     /**
      * @inheritdoc
      */
     public function init()
     {
-
         //options
-//        $this->option_id = empty($this->id) ? false : $this->id;
-//        $this->panel_class = empty($this->option_class) ? 'crudList crudList'.Utility::shortClassName($this->filterModel) : $this->option_class;
+        $this->id = 'crudList-'.Utility::shortClassName($this->filterModel);
+        $this->options['class'] = 'crudList';
 
+        // panel
+        if(!is_bool($this->panel) || $this->panel != false) { // status
 
-        // toolbar
-        if($this->toolbarDisplay){
+            // panel default
+            $this->panel = ArrayHelper::merge([
+                'type' => CrudList::TYPE_DEFAULT,
+                'footerOptions' => ['class' => 'panel-footer text-center'],
+            ], $this->panel);
 
-            $this->toolbar = [];
+            // panel default class
+            $this->options['class'] .= ' ' . $this->panelPrefix . $this->panel['type'];
 
-            // create
-            if($this->createDisplay){
-                $this->toolbar[] = Html::a('<i class="fa fa-plus"></i> '.Yii::t('app/crud', 'create'), ['create'], [
-                    'class' => 'btn btn-success',
-                ]);
-            }
+            // toolbar
+            if (!is_bool($this->toolbar) || $this->toolbar != false){ // status
+                if ($this->panel == []) { // default
 
-            // filter clear
-            if($this->filterDisplay){
-                $this->toolbar[] = Html::a('<i class="fa fa-close"></i> '.Yii::t('app/crud', 'filter.clear'), ['index'], [
-                    'class' => 'btn btn-danger pull-right',
-                    'title' => 'Reset Grid'
-                ]);
-            }
+                    // create
+                    if ($this->toolbarCreate) {
+                        $this->toolbar[] = Html::a('<i class="fa fa-plus"></i> ' . Yii::t('app/crud', 'create'), ['create'], [
+                            'class' => 'btn btn-success',
+                        ]);
+                    }
 
-            // items
-            if($this->toolbarDisplay && !empty($this->toolbarItems)){
-                foreach ($this->toolbarItems as $item){
-                    $this->toolbar[] = $item;
+                    // filter clear
+                    if ($this->toolbarResetFilter) {
+                        $this->toolbar[] = Html::a('<i class="fa fa-close"></i> ' . Yii::t('app/crud', 'filter.clear'), ['index'], [
+                            'class' => 'btn btn-danger pull-right',
+                            'title' => 'Reset Grid'
+                        ]);
+                    }
+
+                    $this->summaryOptions['class'] .= '  pull-right';
+                    $this->toolbar[] = '{summary}<div class="clearfix"></div>';
                 }
             }
 
-            $this->toolbar[] = '{summary}';
+            // panel templete
+            if(!is_bool($this->panelTemplate) || $this->panelTemplate != false){ // status
+                if(empty($this->panelTemplate)){ // default
+                    $this->panelTemplate = (((!is_bool($this->toolbar) || $this->toolbar != false)) ? Html::tag('div', '{toolbar}', ['class' => 'kv-panel-before']) : '') . '{items}{panelFooter}';
+                }
+            }
         }
-
-        //template
-        $this->panelTemplate = '<div class="{prefix}{type} '.(empty($this->option_class) ? ' crudList crudList'.Utility::shortClassName($this->filterModel,false) : $this->option_class).'">';
-        $this->panelTemplate.= $this->toolbarDisplay ? Html::tag('div', '{toolbar}',['class' => 'toolbar']) : '';
-        $this->panelTemplate.='{items}{panelFooter}</div>';
-
-        //panels
-//
-//        $this->panelFooterTemplate =
-
-        $this->panel = ArrayHelper::merge( [
-//            'type'=>CrudList::TYPE_DEFAULT,
-//            'heading'=>false,
-//            'footer'=>false,
-
-            'footerOptions' => ['class' => 'panel-footer text-center'],
-        ],$this->panel);
-
-//        $this->panel = false;
-
 
         // pager
         $this->pager = [
@@ -117,16 +107,13 @@ class CrudList extends GridView
 
         // dataProvider
         if(is_null($this->dataProvider)){
-            $this->dataProvider = $this->filterModel->dataProvider;
+            $this->dataProvider = $this->filterModel->getDataProvider();
         }
-
 
         // filter display
         if(!$this->filterDisplay){
             $this->filterModel = null;
         }
-
-
 
         parent::init();
     }
