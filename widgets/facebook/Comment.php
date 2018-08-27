@@ -3,6 +3,7 @@ namespace izosa\serengeti\widgets\facebook;
 
 use Yii;
 use yii\base\Widget;
+use yii\helpers\Html;
 
 /**
  * Facebook pop up display
@@ -65,14 +66,15 @@ class Comment extends Widget
      */
     public function init()
     {
-        parent::init(); 
-        
-        echo    '<div class="fb-comments" '
-                . 'data-colorscheme="'.$this->colorscheme.'" '
-                . 'data-href="'.$this->href.'" '
-                . 'data-numposts="'.$this->num_posts.'" '
-                . 'data-order-by="'.$this->order_by.'" '
-                . 'data-mobile="'.var_export($this->mobile, true).'" '
-                . 'data-width="'.$this->width.'"></div>';
+        parent::init();
+
+        echo Html::tag('div','', [
+            'class' => "fb-comments",
+            'data-colorscheme' => $this->colorscheme,
+            'data-href' => $this->href,
+            'data-mobile' => var_export($this->mobile, true),
+            'data-num_posts' => $this->num_posts,
+            'data-order_by' => $this->order_by,
+        ]);
     }
 }
