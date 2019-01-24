@@ -2,10 +2,12 @@
 
 namespace izosa\serengeti\data\bootstrap;
 
+use izosa\serengeti\data\CrudItem;
 use izosa\serengeti\site\Utility;
 use Yii;
 use kartik\grid\GridView;
 use kartik\icons\Icon;
+use yii\bootstrap4\Modal;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
@@ -23,15 +25,24 @@ class CrudList extends GridView
     public $filterPosition = self::FILTER_POS_HEADER;
     public $resizableColumns = false;
 
+
+    public $exportConfig;
+
     public $filterDisplay = true;
     public $toolbarDisplay = true;
     public $createDisplay = true;
 
-    public $toolbar = [];
+    public $toolbar = false;
     public $toolbarCreate = true;
     public $toolbarResetFilter = true;
 
-    public $panelTemplate = '';
+    public $panel = [
+        'heading'=> '',
+        'type'=> self::TYPE_DEFAULT,
+        'before'=> '',
+        'after'=> false,
+        'footer'=> ''
+    ];
 
     public $pjax = true;
     public $pjaxSettings = [
@@ -41,60 +52,46 @@ class CrudList extends GridView
         'loadingCssClass' => false,
     ];
 
-    public $panel_up_left = '';
-    public $panel_up_right = '';
-
-
     /**
      * @inheritdoc
      */
     public function init()
     {
         //options
-        $this->id = 'crudList-'.Utility::shortClassName($this->filterModel);
         $this->options['class'] = 'crudList';
+        $this->id = $this->options['class'].'-'.$this->filterModel->modelType;
 
         // panel
         if(!is_bool($this->panel) || $this->panel != false) { // status
 
+            // FilterModel Title [Card][Title]
+            $this->panelHeadingTemplate = Icon::show($this->filterModel::$icon).Yii::t('model/'.(empty($this->filterModel::$modelPrefix) ? '' : $this->filterModel::$modelPrefix.'/').$this->filterModel->modelType, 'model.title', ['n' => 2]).'{summary}';
+
             // panel default
             $this->panel = ArrayHelper::merge([
-                'type' => CrudList::TYPE_DEFAULT,
-                'footerOptions' => ['class' => 'panel-footer text-center'],
+                'type' => self::TYPE_DEFAULT,
             ], $this->panel);
 
-            // panel default class
-            $this->options['class'] .= ' ' . $this->panelPrefix . $this->panel['type'];
+            // panel container class (table) [Card][Body]
+            $this->containerOptions['class'] = 'card-body'.(isset($this->containerOptions['class']) ? ' '.$this->containerOptions['class'] : '');
 
-            // toolbar
-            if (!is_bool($this->toolbar) || $this->toolbar != false){ // status
-                if ($this->panel == []) { // default
 
-                    // create
-                    if ($this->toolbarCreate) {
-                        $this->toolbar[] = Html::a('<i class="fa fa-plus"></i> ' . Yii::t('app/crud', 'create'), ['create'], [
-                            'class' => 'btn btn-success',
-                        ]);
-                    }
+            // Toolbar (panel before)
+            $this->panelBeforeTemplate = '{before}';
 
-                    // filter clear
-                    if ($this->toolbarResetFilter) {
-                        $this->toolbar[] = Html::a('<i class="fa fa-close"></i> ' . Yii::t('app/crud', 'filter.clear'), ['index'], [
-                            'class' => 'btn btn-danger pull-right',
-                            'title' => 'Reset Grid'
-                        ]);
-                    }
-
-                    $this->summaryOptions['class'] .= '  pull-right';
-                    $this->toolbar[] = '{summary}<div class="clearfix"></div>';
-                }
+            // Toolbar Create Button
+            if ($this->toolbarCreate) {
+                $this->panel['before'].= Html::a('<i class="fa fa-plus"></i> ' . Yii::t('app/crud', 'create'), ['create'], [
+                    'class' => 'btn btn-success pull-left',
+                ]);
             }
 
-            // panel templete
-            if(!is_bool($this->panelTemplate) || $this->panelTemplate != false){ // status
-                if(empty($this->panelTemplate)){ // default
-                    $this->panelTemplate = (((!is_bool($this->toolbar) || $this->toolbar != false)) ? Html::tag('div', '{toolbar}', ['class' => 'kv-panel-before']) : '') . '{items}{panelFooter}';
-                }
+            // Toolbar Filter Clear Button
+            if ($this->toolbarResetFilter) {
+                $this->panel['before'].= Html::a('<i class="fa fa-close"></i> ' . Yii::t('app/crud', 'filter.clear'), ['index'], [
+                    'class' => 'btn btn-danger pull-right',
+                    'title' => Yii::t('app/crud', 'filter.clear')
+                ]);
             }
         }
 
@@ -103,19 +100,48 @@ class CrudList extends GridView
             'maxButtonCount' => 5,
             'prevPageLabel' => Icon::show('chevron-left'),
             'nextPageLabel' => Icon::show('chevron-right'),
+            'options' => ['class' => 'pagination justify-content-center m-0']
         ];
+
+        // filter display
+        if(!$this->filterDisplay){
+            $this->filterModel = null;
+        } else {
+            $this->filterModel->setScenario(CrudItem::SCENARIO_SEARCH);
+        }
 
         // dataProvider
         if(is_null($this->dataProvider)){
             $this->dataProvider = $this->filterModel->getDataProvider();
         }
 
-        // filter display
-        if(!$this->filterDisplay){
-            $this->filterModel = null;
-        }
+
 
         parent::init();
+    }
+
+    static function delete($item){
+
+        Modal::begin([
+            'id' => $item->modelName.'delete'.$item->id,
+            'title' => Yii::t('app/crud','confirmation'),
+            'toggleButton' =>['tag' => 'span', 'label' => Icon::show('trash text-info'), 'type' => false],
+            'footer' =>
+                Html::button(Icon::show('close').' '.Yii::t('app/crud','form.cancel'), ['class' => 'btn btn-warning', 'type' => 'button', 'data' => ['dismiss' => 'modal']]).
+                Html::a(Icon::show('trash-o').' '.Yii::t('app/crud','form.delete'), $item->getURLDashboard($item::ACTION_DELETE), ['class' => 'btn btn-danger']),
+        ]);
+
+        echo Yii::t('app/crud','question.delete.item',['item' => mb_strtolower(Yii::t('model/'.(empty($item::$modelPrefix) ? '' : $item::$modelPrefix.'/').$item->modelType,'model.title',['n' => 100]))]);
+
+        Modal::end();
+    }
+
+
+    static function status($item){
+
+
+        return Html::a(Icon::show('circle',['class'=>'text-'.($item->status > 0 ? 'success' : 'danger')]),$item->getURLDashboard($item::ACTION_STATUS));
+
     }
 
 }

@@ -1,6 +1,8 @@
 <?
 namespace izosa\serengeti\data\bootstrap;
 
+use izosa\serengeti\data\CrudItem;
+use izosa\serengeti\widgets\google\Youtube;
 use Yii;
 use kartik\icons\Icon;
 use \kartik\helpers\Html;
@@ -8,19 +10,16 @@ use \kartik\form\ActiveForm;
 use letyii\tinymce\Tinymce;
 
 /**
- * Form implement boostrtap design
+ * CrudForm implement boostrtap design
  * @author izosa
  * @version 1.0
+ *
+ * @property CrudItem $item
  */
 class CrudForm extends ActiveForm{
 
-    const SCENARIO_SEARCH = 'search';
-    const SCENARIO_CRUD = 'crud';
-
-    const STATUS_PUBLISHED = 1;
-    const STATUS_DRAFT = 0;
-
-    public $layout = 'horizontal';
+    public $item  = null;
+    public $type = self::TYPE_HORIZONTAL;
 
     public $options = [
         'enctype' => 'multipart/form-data',
@@ -36,17 +35,42 @@ class CrudForm extends ActiveForm{
             'error' => '',
             'hint' => '',
         ],
-//
     ];
 
-    public function content($model, $attribute, $options = [])
+
+
+    /**
+     * @inheritdoc
+     * @throws InvalidConfigException
+     */
+    public function init()
+    {
+        // [Form][ID]
+        if(!is_null($this->item) && !$this->item->isNewRecord){
+            $this->options['id'] = $this->options['class'].'-'.CrudItem::shortClassName($this->item).'-'.$this->item->id;
+
+        }
+
+        parent::init();
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="Fields">
+
+    /**
+     * Content field | TinyMCE field
+     * @param $this->model
+     * @param $attribute
+     * @param array $options
+     * @return $this
+     */
+    public function content($attribute, $options = [])
     {
         $class = basename(Yii::$app->getBasePath()).'\assets\AppAsset';
         $class::register(Yii::$app->view);
 
-        return $this->field($model, $attribute, ['horizontalCssClasses' => ['wrapper' => 'col-sm-10']])->widget(Tinymce::className(), [
+        return $this->field($this->item, $attribute, ['horizontalCssClasses' => ['wrapper' => 'col-sm-10']])->widget(Tinymce::className(), [
             'options' => [
-                'id' => 'content',
+                'id' => 'content-'.$attribute,
                 'rows' => 20,
                 'required',
 
@@ -114,32 +138,94 @@ class CrudForm extends ActiveForm{
         ]);
     }
 
-
-    public function checkbox($model, $attribute, $options = [])
+    /**
+     * Checkbox field
+     * @param $attribute
+     * @param array $options
+     * @return \kartik\form\ActiveField
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function checkbox($attribute, $options = [])
     {
-        return $this->field($model, $attribute,[
+        return $this->field($this->item, $attribute,[
             'horizontalCheckboxTemplate' => "<div class=\"col-xs-offset-2 col-sm-10\">\n<div class=\"checkbox checkbox-success\">\n{input}\n{beginLabel}\n{labelTitle}\n{endLabel}\n</div>\n{error}\n</div>\n{hint}",
         ])->checkbox($options,true);
 
     }
 
-    // buttons
+    /**
+     * Video field
+     * @param $attribute
+     * @param array $options
+     * @return string
+     * @throws \Exception
+     */
+    public function cover($attribute){
+        $preview = '';
 
+        if(empty($this->item->{$attribute})){
+            $preview = Html::a(
+                Html::img($this->item->{$attribute},['class' => 'img-thumbnail']),
+                $this->item->{$attribute},['class' => 'd-block swipebox col-sm-5 offset-sm-2 pt-3 pb-3']
+            );
+        }
 
-    public function buttonSave($model)
-    {
-        return Html::submitButton(Icon::show($model->isNewRecord ? 'file' : 'floppy-o').' '.Yii::t('app/crud',$model->isNewRecord ? 'form.create' : 'form.save') , ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-info']);
+        return $preview. $this->field($this->item,$attribute)->fileInput();
     }
 
-    public function buttonCancel($model)
+    /**
+     * Video field
+     * @param $attribute
+     * @param array $options
+     * @return string
+     * @throws \Exception
+     */
+    public function video($attribute){
+
+        $preview = '';
+
+        if(!empty($this->item->{$attribute})){
+            $preview = Html::tag('div',Youtube::widget(['youtubeid' => $this->item->{$attribute}]),['class' => 'col-sm-5 offset-sm-2 pt-3 pb-3']);
+            $this->item->{$attribute} = Youtube::getUrlFromId($this->item->{$attribute});
+        }
+
+        return $preview. $this->field($this->item,$attribute)->textInput(['placeholder' => Yii::t('app/crud','placeholder.video')]);
+    }
+
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="Buttons">
+
+    /**
+     * Save button
+     * @return string
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function buttonSave()
+    {
+        return Html::submitButton(Icon::show($this->item->isNewRecord ? 'file' : 'floppy-o').' '.Yii::t('app/crud',$this->item->isNewRecord ? 'form.create' : 'form.save') , ['class' => 'btn btn-'.($this->item->isNewRecord ? 'success' : 'primary')]);
+    }
+
+    /**
+     * Cancel Button
+     * @return string
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function buttonCancel()
     {
         return Html::a(Icon::show('remove').' '.Yii::t('app/crud','form.cancel'), Yii::$app->request->referrer, ['class' => 'btn btn-warning']);
     }
 
-    public function buttonPreview($model)
+    /**
+     * Review button
+     * @return string
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function buttonPreview()
     {
-        return $model->isNewRecord ? '' : Html::a(Icon::show('eye').' '.Yii::t('app/crud','form.live.preview'), str_replace('admin.','www.',$model->url), ['class' => 'btn btn-review pull-right', 'target' => '_blank']);
+        return $this->item->isNewRecord ? '' : Html::a(Icon::show('eye').' '.Yii::t('app/crud','form.preview'), str_replace('admin.','www.',$this->item->url), ['class' => 'btn btn-dark', 'target' => '_blank']);
     }
 
+    // </editor-fold>
 
 }
