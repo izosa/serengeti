@@ -10,9 +10,10 @@ use letyii\tinymce\Tinymce;
 use yii\widgets\Pjax;
 
 /**
- * Item Form implement boostrtap design
- * @author izosa
+ * CrudView implement bootstrap design
+ * @package izosa\serengeti\data\bootstrap
  * @version 1.0
+ * @author Hristo Hristov <izosa@msn.com>
  *
  * @property $item CrudItem
  */

@@ -13,6 +13,12 @@ use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use izosa\serengeti\widgets\helpers\SEO;
 
+/**
+ * DisplayList implement bootstrap design
+ * @package izosa\serengeti\data\bootstrap
+ * @version 0.1
+ * @author Hristo Hristov <izosa@msn.com>
+ */
 class DisplayList extends \yii\widgets\ListView
 {
     public $layout ='<ul>{items}</ul><nav>{pager}</nav>{summary}';

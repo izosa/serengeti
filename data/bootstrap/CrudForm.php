@@ -10,9 +10,10 @@ use \kartik\form\ActiveForm;
 use letyii\tinymce\Tinymce;
 
 /**
- * CrudForm implement boostrtap design
- * @author izosa
+ * CrudForm implement bootstrap design
+ * @package izosa\serengeti\data\bootstrap
  * @version 1.0
+ * @author Hristo Hristov <izosa@msn.com>
  *
  * @property CrudItem $item
  */

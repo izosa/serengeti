@@ -12,6 +12,12 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 
+/**
+ * CrudList implement bootstrap design
+ * @package izosa\serengeti\data\bootstrap
+ * @version 1.0
+ * @author Hristo Hristov <izosa@msn.com>
+ */
 class CrudList extends GridView
 {
 

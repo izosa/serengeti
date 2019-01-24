@@ -14,6 +14,7 @@ use yii\helpers\Url;
 /**
  * Class CrudItem
  * @package izosa\serengeti\data
+ * @version 1.0
  *
  * @property string $modelName
  * @property string $modelType
