@@ -1,0 +1,67 @@
+
+$menu_width: 250px;
+@import "../../../../../node_modules/@cmyee/pushy/scss/pushy";
+
+$widget-mobileMenu-background : $primary !default;
+$widget-mobileMenu-color : #ffffff !default;
+
+$widget-mobileMenu-btn-background : $primary !default;
+$widget-mobileMenu-btn-color : #ffffff !default;
+$widget-mobileMenu-btn-background-hover : darken($widget-mobileMenu-btn-background, 5%);
+
+.menu-btn{
+  width: 45px;
+  height: 45px;
+  background: $widget-mobileMenu-btn-background;
+  color: $widget-mobileMenu-btn-color;
+  line-height: 45px;
+  font-size: 1.4em;
+  cursor: pointer;
+  text-align: center;
+
+  &:hover{
+    background: darken($widget-mobileMenu-btn-background,5%);
+    color: #FFF;
+  }
+}
+
+.pushy{
+  background: $widget-mobileMenu-background;
+  color: $widget-mobileMenu-color;
+
+  ul:first-child {
+    margin: 0;
+    padding: 0;
+  }
+
+  label {
+    color: $widget-mobileMenu-color;
+    background: darken($widget-mobileMenu-btn-background-hover,10%);
+    border:none;
+    height: 45px;
+    width: 100%;
+    font-size: 1.3em;
+    font-weight: 700;
+    line-height: 45px;
+    margin:0;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  a{
+    color: $widget-mobileMenu-color;
+    font-size: 1.2em;
+    line-height: 1.2em;
+    border-bottom: 1px solid $widget-mobileMenu-btn-background-hover;
+    border-top:none;
+    transition: background 500ms ease;
+
+    &:hover{
+      background: $widget-mobileMenu-btn-background-hover;
+    }
+  }
+
+  li.active{
+    background: $widget-mobileMenu-btn-background-hover;
+  }
+}

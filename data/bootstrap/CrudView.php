@@ -20,6 +20,7 @@ use yii\widgets\Pjax;
 class CrudView extends CrudForm {
 
     public $item = null;
+    private $item_restore = null;
     public $title = '';
     private $item_prefix = '';
 
@@ -106,8 +107,18 @@ class CrudView extends CrudForm {
         echo parent::run();
     }
 
-    public function itemField($attribute, $options = []){
-        return $this->field($this->item,$attribute,$options);
+    public function switchItem($item){
+        if(is_null($this->item_restore)){
+            $this->item_restore = $this->item;
+            $this->item = $item;
+        }
+    }
+
+    public function restoreItem(){
+        if(!is_null($this->item_restore)){
+            $this->item = $this->item_restore;
+            $this->item_restore = null;
+        }
     }
 
 }

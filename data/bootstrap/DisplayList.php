@@ -40,12 +40,32 @@ class DisplayList extends \yii\widgets\ListView
 //        'lastPageLabel'  => '<i class="fa fa-angle-right"></i><i class="fa fa-angle-right"></i>',
 //        'maxButtonCount' => 7,
 //        'options' => ['class' => 'pager'],
-//        'pageCssClass' => 'desktop',
+        'pageCssClass' => 'desktop',
         'registerLinkTags' => true,
         'hideOnSinglePage' => true,
         'maxButtonCount' => 9,
     ];
 
+//
+//    /**
+//     * Runs the widget.
+//     */
+//    public function run()
+//    {
+//        if ($this->showOnEmpty || $this->dataProvider->getCount() > 0) {
+//            $content = preg_replace_callback('/{\\w+}/', function ($matches) {
+//                $content = $this->renderSection($matches[0]);
+//
+//                return $content === false ? $matches[0] : $content;
+//            }, $this->layout);
+//        } else {
+//            $content = $this->renderEmpty();
+//        }
+//
+//        $options = $this->options;
+//        $tag = ArrayHelper::remove($options, 'tag', 'div');
+//        echo Html::tag($tag, $content, $options);
+//    }
 
     /**
      * @inheritdoc
@@ -57,10 +77,10 @@ class DisplayList extends \yii\widgets\ListView
         }
 
         // dataProvider
-        $this->dataProvider = $this->filterModel->dataProvider;
+        $this->dataProvider = empty($this->dataProvider) ? $this->filterModel->dataProvider : $this->dataProvider;
 
         // Model Name
-        $modelName = (new \ReflectionClass($this->filterModel))->getShortName();
+        $modelName = $this->filterModel->getModelName();
 
         // listView class
         $this->options['class'].= (empty($this->options['class']) ? '' : ' ').'displayList_'.$modelName;

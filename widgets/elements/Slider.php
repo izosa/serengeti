@@ -95,13 +95,14 @@ class Slider extends Widget
     {
         if(self::hasItems())
         {
+
             SliderAsset::register(Yii::$app->view);
 
             // load js module
             $this->loader();
 
             // select view
-            $view = is_null($this->view) ? 'slider' :  '@view/'.$this->view;
+            $view = is_null($this->view) ? 'slider' :  '@app/views/'.$this->view;
 
             // render
             $output = Html::beginTag('div', ['class' => 'owl-carousel', 'id' => $this->target]);

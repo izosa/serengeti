@@ -2,9 +2,12 @@
 
 namespace izosa\serengeti\widgets\elements;
 
+use izosa\serengeti\data\CrudItem;
+use izosa\serengeti\site\Utility;
 use Yii;
 use yii\base\Widget;
 use yii\helpers\Json;
+use yii\web\Response;
 use izosa\serengeti\widgets\helpers\Loader;
 
 /**
@@ -12,51 +15,53 @@ use izosa\serengeti\widgets\helpers\Loader;
  */
 class Rating extends Widget
 {
-
     public $model;
     public $message;
     public $label = 'stars';
     public $thankyou = 'Thanks for voting!';
     public $youvoted = 'You already voted!';
     public $count = 5;
-    
-    
+
+    private $_stars = 0;
+
+    /**
+     * @inheritdoc
+     */
     public function init() 
     {
-        
         parent::init();
 
-        if ($this->model->rate > 0)
-        {
-            $stars = ceil($this->model->rate / $this->model->votes) > $this->count ? $this->count : ceil($this->model->rate / $this->model->votes);
+        if ($this->model->rate > 0) {
+            $this->_stars = ceil($this->model->rate / $this->model->votes) > $this->count ? $this->count : ceil($this->model->rate / $this->model->votes);
+        } else {
+            $this->_stars = 0;
         }
-        else
-        {
-            $stars = 0;
-        }
-        
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function run()
+    {
         RatingAsset::register(Yii::$app->view);
-        
-        
-        $model = $this->model;
-        
+
         Loader::addWidget('rating', [
             'id' => $this->model->id,
             'rate' => $this->model->rate,
             'votes' => $this->model->votes,
             'isVoted' => false,
-            'stars' => $stars,
+            'stars' => $this->_stars,
             'label' => $this->label,
             'thankyou' => $this->thankyou,
             'youvoted' => $this->youvoted,
             'count' => $this->count,
-            'model' => $model::DIR
+            'model' => CrudItem::shortClassName($this->model),
         ]);
-        
-        echo $this->render('rating', [
+
+        return  $this->render('rating', [
             'count' => $this->count,
             'votes' => $this->model->votes,
-            'stars' => $stars,
+            'stars' => $this->_stars,
             'model' => $this->model,
         ]);
     }
@@ -81,6 +86,8 @@ class Rating extends Widget
                 $item->rate+= $rate;
                 ++$item->votes;
                 $item->save();
+
+                Yii::$app->response->format = Response::FORMAT_JSON;
 
                 return Json::encode([
                     'votes' => $item->votes,

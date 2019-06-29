@@ -3,6 +3,7 @@ namespace izosa\serengeti\widgets\facebook;
 
 use Yii;
 use yii\base\Widget;
+use yii\helpers\Html;
 
 /**
  * Facebook like buton
@@ -93,17 +94,27 @@ class Like extends Widget
      */
     public function init()
     {
-        parent::init(); 
+        parent::init();
+    }
 
-        echo    '<div class="fb-like" '
-                . 'data-action="'.$this->action.'" '
-                . 'data-colorscheme="'.$this->colorscheme.'" '
-                . 'data-href="'.$this->href.'" '
-                . 'data-kid_directed_site="'.var_export($this->kid_directed_site, true).'" '
-                . 'data-layout="'.$this->layout.'" '
-                . 'data-ref="'.$this->ref.'" '
-                . 'data-share="'.var_export($this->share, true).'" '
-                . 'data-show-faces="'.var_export($this->show_faces, true).'" '
-                . 'data-width="'.$this->width.'"></div>';
+    /**
+     * @inheritdoc
+     */
+    public function run()
+    {
+        return Html::tag('div','',[
+            'class' => 'fb-like',
+            'data' => [
+                'action' => $this->action,
+                'colorscheme' => $this->colorscheme,
+                'href' => $this->href,
+                'kid_directed_site' => var_export($this->kid_directed_site, true),
+                'layout' => $this->layout,
+                'ref' => $this->ref,
+                'share' => var_export($this->share, true),
+                'show_faces' => var_export($this->show_faces, true),
+                'width' => $this->width,
+            ],
+        ]);
     }
 }

@@ -3,11 +3,13 @@ namespace izosa\serengeti\data\bootstrap;
 
 use izosa\serengeti\data\CrudItem;
 use izosa\serengeti\widgets\google\Youtube;
+use izosa\serengeti\widgets\helpers\Loader;
 use Yii;
 use kartik\icons\Icon;
 use \kartik\helpers\Html;
 use \kartik\form\ActiveForm;
 use letyii\tinymce\Tinymce;
+use yii\helpers\ArrayHelper;
 
 /**
  * CrudForm implement bootstrap design
@@ -58,18 +60,115 @@ class CrudForm extends ActiveForm{
     // <editor-fold defaultstate="collapsed" desc="Fields">
 
     /**
+     * Item active field
+     * @param $attribute
+     * @param array $options
+     * @return \kartik\form\ActiveField | string
+     */
+    public function itemField($attribute, $options = []){
+        return $this->field($this->item,$attribute,$options);
+    }
+
+
+    /**
+     * Item active field
+     * @param $attribute
+     * @param array $options
+     * @return \kartik\form\ActiveField | string
+     */
+    public function itemHiddenField($attribute, $options = []){
+        return Html::activeHiddenInput($this->item,$attribute,$options);
+    }
+
+    /**
+     * Checkbox field
+     * @param $attribute
+     * @param array $options
+     * @return \kartik\form\ActiveField | string
+     */
+    public function checkbox($attribute, $options = [])
+    {
+        return $this->field($this->item, $attribute,[
+            'horizontalCheckboxTemplate' => "<div class=\"col-xs-offset-2 col-sm-10\">\n<div class=\"checkbox checkbox-success\">\n{input}\n{beginLabel}\n{labelTitle}\n{endLabel}\n</div>\n{error}\n</div>\n{hint}",
+        ])->checkbox($options,true);
+
+    }
+
+    /**
+     * Number field
+     * @param $attribute
+     * @param array $options
+     * @return \kartik\form\ActiveField
+     */
+
+    /**
+     * Number field
+     * @param $attibute
+     * @param int $step
+     * @param int $min
+     * @param int $max
+     * @return \kartik\form\ActiveField | string
+     */
+    public function number($attibute, $step = 1, $min = 0 , $max = 99999999999, $options= [], $inputOptions = []){
+        $inputOptions = ArrayHelper::merge([
+            'type' => 'number',
+            'min' => $min,
+            'max' => $max,
+            'step' => $step,
+        ],$inputOptions);
+        return $this->itemField($attibute,$options)->textInput($inputOptions);
+    }
+
+    //----------------
+
+    /**
+     * Title field
+     * @param string $attribute
+     * @return \kartik\form\ActiveField | string
+     */
+    public function title($attribute = 'title'){
+        return $this->itemField($attribute);
+    }
+
+    /**
+     * Status field
+     * @param string $attribute
+     * @return \kartik\form\ActiveField | string
+     */
+    public function status($attribute = 'status'){
+        return $this->itemField($attribute)->dropDownList($this->item->listStatus());
+    }
+
+    /**
+     * Slug field
+     * @param string $attribute
+     * @param string $title_attribute
+     * @return \kartik\form\ActiveField | string
+     */
+    public function slug($attribute = 'slug', $title_attribute = 'title'){
+        Loader::addWidget('pageSlug', [
+            'model' =>  $this->item->modelType,
+            'slug_attribute' =>  $attribute,
+            'title_attribute' =>  $title_attribute,
+        ]);
+
+        return $this->itemField($attribute);
+    }
+
+    /**
      * Content field | TinyMCE field
      * @param $this->model
      * @param $attribute
      * @param array $options
      * @return $this
+     * @return \kartik\form\ActiveField | string
      */
-    public function content($attribute, $options = [])
+    public function content($attribute = 'content')
     {
         $class = basename(Yii::$app->getBasePath()).'\assets\AppAsset';
         $class::register(Yii::$app->view);
 
-        return $this->field($this->item, $attribute, ['horizontalCssClasses' => ['wrapper' => 'col-sm-10']])->widget(Tinymce::className(), [
+        return $this->itemField($attribute, ['horizontalCssClasses' => ['wrapper' => 'col-sm-10']])->widget(Tinymce::className(), [
             'options' => [
                 'id' => 'content-'.$attribute,
                 'rows' => 20,
@@ -140,48 +239,50 @@ class CrudForm extends ActiveForm{
     }
 
     /**
-     * Checkbox field
+     * Note field | TinyMCE field
+     * @param $this->model
      * @param $attribute
      * @param array $options
-     * @return \kartik\form\ActiveField
-     * @throws \yii\base\InvalidConfigException
+     * @return \kartik\form\ActiveField | string
      */
-    public function checkbox($attribute, $options = [])
+    public function note($attribute = 'note')
     {
-        return $this->field($this->item, $attribute,[
-            'horizontalCheckboxTemplate' => "<div class=\"col-xs-offset-2 col-sm-10\">\n<div class=\"checkbox checkbox-success\">\n{input}\n{beginLabel}\n{labelTitle}\n{endLabel}\n</div>\n{error}\n</div>\n{hint}",
-        ])->checkbox($options,true);
-
+        return $this->content($attribute);
     }
 
     /**
-     * Video field
+     * Cover field
      * @param $attribute
      * @param array $options
-     * @return string
-     * @throws \Exception
+     * @return \kartik\form\ActiveField | string
      */
     public function cover($attribute){
         $preview = '';
 
-        if(empty($this->item->{$attribute})){
+        if(!empty($this->item->{$attribute})){
             $preview = Html::a(
                 Html::img($this->item->{$attribute},['class' => 'img-thumbnail']),
                 $this->item->{$attribute},['class' => 'd-block swipebox col-sm-5 offset-sm-2 pt-3 pb-3']
             );
         }
 
-        return $preview. $this->field($this->item,$attribute)->fileInput();
+        $button = Icon::show('upload').Yii::t('model/picture', 'upload.picture');
+
+        return $preview. $this->itemField($attribute,[
+            'template' => '{label} {beginWrapper} '.$button.' {input} {hint} {error} {endWrapper}',
+                'horizontalCssClasses' => [
+                    'wrapper' => ' btn btn-block btn-primary col-sm-2 ml-3 mr-3',
+                ],
+            ])->fileInput(['class' => 'input-file']);
     }
 
     /**
      * Video field
      * @param $attribute
      * @param array $options
-     * @return string
-     * @throws \Exception
+     * @return \kartik\form\ActiveField | string
      */
-    public function video($attribute){
+    public function video($attribute = 'video'){
 
         $preview = '';
 
@@ -190,7 +291,25 @@ class CrudForm extends ActiveForm{
             $this->item->{$attribute} = Youtube::getUrlFromId($this->item->{$attribute});
         }
 
-        return $preview. $this->field($this->item,$attribute)->textInput(['placeholder' => Yii::t('app/crud','placeholder.video')]);
+        return $preview. $this->itemField($attribute)->textInput(['placeholder' => Yii::t('app/crud','placeholder.video')]);
+    }
+
+    /**
+     * Tags field
+     * @param string $attribute
+     * @return \kartik\form\ActiveField | string
+     */
+    public function tags($attribute = 'tags'){
+        return $this->itemField($attribute)->textInput(['placeholder' => Yii::t('app/crud','placeholder.tags')]);
+    }
+
+    /**
+     * Description field
+     * @param string $attribute
+     * @return \kartik\form\ActiveField | string
+     */
+    public function description($attribute = 'description'){
+        return $this->itemField($attribute)->textInput(['placeholder' => Yii::t('app/crud','placeholder.description')]);
     }
 
     // </editor-fold>

@@ -126,12 +126,12 @@ class CrudList extends GridView
         parent::init();
     }
 
-    static function delete($item){
+    static function delete($item, $options = []){
 
         Modal::begin([
             'id' => $item->modelName.'delete'.$item->id,
             'title' => Yii::t('app/crud','confirmation'),
-            'toggleButton' =>['tag' => 'span', 'label' => Icon::show('trash text-info'), 'type' => false],
+            'toggleButton' => ArrayHelper::merge(['tag' => 'span', 'label' => Icon::show('trash text-info'), 'type' => false],$options),
             'footer' =>
                 Html::button(Icon::show('close').' '.Yii::t('app/crud','form.cancel'), ['class' => 'btn btn-warning', 'type' => 'button', 'data' => ['dismiss' => 'modal']]).
                 Html::a(Icon::show('trash-o').' '.Yii::t('app/crud','form.delete'), $item->getURLDashboard($item::ACTION_DELETE), ['class' => 'btn btn-danger']),
@@ -143,11 +143,24 @@ class CrudList extends GridView
     }
 
 
-    static function status($item){
-
-
-        return Html::a(Icon::show('circle',['class'=>'text-'.($item->status > 0 ? 'success' : 'danger')]),$item->getURLDashboard($item::ACTION_STATUS));
-
+    static function status($item, $options = []){
+        return Html::a(Icon::show('circle',['class'=>'text-'.($item->status > 0 ? 'success' : 'danger')]),$item->getURLDashboard($item::ACTION_STATUS),$options);
     }
+
+    static function move($item, $all,  $options = [],$iconUp = 'up', $iconDown =  'down'){
+        $optionsUp = $optionsDown = $options;
+        $optionsDown['class'].= ($item->order == 1) ? ' disabled' : '';
+        $optionsUp['class'].= ($item->order ==$all) ? ' disabled' : '';
+
+        return
+            self::move_item($item, $iconUp, $item::ACTION_MOVE_DOWN,$optionsDown).
+            self::move_item($item, $iconDown, $item::ACTION_MOVE_UP,$optionsUp);
+    }
+
+    static function move_item($item, $icon, $action, $options = []){
+        return Html::a(Icon::show('arrow-'.$icon,['title' =>  Yii::t('model', 'move.'.$action)]),$item->getURLDashboard($action),$options);
+    }
+
+
 
 }

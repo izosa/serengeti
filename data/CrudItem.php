@@ -37,8 +37,8 @@ class CrudItem extends \yii\db\ActiveRecord
     const ACTION_UPDATE     = 'update';
     const ACTION_STATUS     = 'status';
     const ACTION_DELETE     = 'delete';
-    const ACTION_UP         = 'up';
-    const ACTION_DOWN       = 'down';
+    const ACTION_MOVE_UP    = 'move_up';
+    const ACTION_MOVE_DOWN  = 'move_down';
     const ACTION_DOWNLOAD   = 'download';
     const ACTION_UPLOAD     = 'upload';
 
@@ -186,40 +186,52 @@ class CrudItem extends \yii\db\ActiveRecord
      * @throws \ReflectionException
      */
     public static function postToObjects($model){
-        $key = self::shortClassName($model);
+        $key = $model->modelName;
         $class = $model::className();
-        $items = Yii::$app->request->post($key);
+        $items = $_POST[$key];//Yii::$app->request->post($key);
 
         $list = [];
 
         if(!empty($items)){
-            $keys = array_keys($items);
-            $count = count($items[$keys[0]]);
+            if(is_array($items[array_keys($items)[0]])){
+                // multiple rows
+                $keys = array_keys($items);
+                $count = count($items[$keys[0]]);
 
-            if(ArrayHelper::isAssociative($items[$keys[0]])){
+                if(ArrayHelper::isAssociative($items[$keys[0]])){
 
-                $innerKeys = array_keys($items[$keys[0]]);
+                    $innerKeys = array_keys($items[$keys[0]]);
 
-                foreach ($innerKeys as $innerKey){
-                    $item = new $class;
+                    foreach ($innerKeys as $innerKey){
+                        $item = new $class;
 
-                    for ($i = 0; $i < count($keys); $i++){
-                        $item->{$keys[$i]} = isset($items[$keys[$i]][$innerKey]) ? $items[$keys[$i]][$innerKey] : '';
+                        for ($i = 0; $i < count($keys); $i++){
+                            $item->{$keys[$i]} = isset($items[$keys[$i]][$innerKey]) ? $items[$keys[$i]][$innerKey] : '';
+                        }
+
+                        $list[] = $item;
                     }
+                } else {
+                    for ($i = 0; $i < $count; $i++){
+                        $item = new $class();
 
-                    $list[] = $item;
+                        foreach ($keys as $key){
+
+                            var_dump($key);
+
+                            $item->{$key} = isset($items[$key][$i]) ? $items[$key][$i] : '';
+                        }
+                        $list[] = $item;
+                    }
                 }
             } else {
-                for ($i = 0; $i < $count; $i++){
-                    $item = new $class();
-
-                    foreach ($keys as $key){
-                        $item->{$key} = isset($items[$key][$i]) ? $items[$key][$i] : '';
-                    }
-                    $list[] = $item;
+                // only one row
+                $item = new $class();
+                foreach ($items as $key => $value) {
+                    $item->{$key} = $value;
                 }
+                $list[] = $item;
             }
-
         }
 
         return $list;
@@ -251,11 +263,6 @@ class CrudItem extends \yii\db\ActiveRecord
                         }
                     }
                 } else {
-
-
-                    var_dump($variableName);
-
-
                     $files[$variableName]['name'] = $_FILES[$variableName]['name'];
                     $files[$variableName]['tmp_name'] = $_FILES[$variableName]['tmp_name'];
                     $files[$variableName]['error'] = $_FILES[$variableName]['error'];
